@@ -1,0 +1,106 @@
+export const lightTheme = {
+  // Primary colors
+  primary: '#4A90E2',
+  primaryDark: '#3A7BC8',
+  secondary: '#7B68EE',
+  accent: '#FF6B9D',
+
+  // Backgrounds
+  background: '#F5F5F5',
+  surface: '#FFFFFF',
+  card: '#FFFFFF',
+  modal: '#F9F9F9',
+
+  // Text colors
+  text: '#333333',
+  textSecondary: '#666666',
+  textLight: '#999999',
+  textInverse: '#FFFFFF',
+
+  // Status colors
+  success: '#4CAF50',
+  warning: '#FFC107',
+  error: '#E74C3C',
+  info: '#2196F3',
+
+  // Component specific
+  border: '#EEEEEE',
+  divider: '#E0E0E0',
+  disabled: '#CCCCCC',
+  placeholder: '#999999',
+
+  // Buttons
+  buttonPrimary: '#4A90E2',
+  buttonSecondary: '#F0F0F0',
+  buttonText: '#FFFFFF',
+
+  // Input
+  inputBackground: '#F0F0F0',
+  inputBorder: '#DDDDDD',
+  inputText: '#333333',
+
+  // Navigation
+  navBackground: '#FFFFFF',
+  navBorder: '#EEEEEE',
+  navIcon: '#666666',
+  navIconActive: '#4A90E2',
+
+  // Overlay
+  overlay: 'rgba(0, 0, 0, 0.5)',
+  overlayLight: 'rgba(0, 0, 0, 0.3)',
+};
+
+export const darkTheme = {
+  // Primary colors
+  primary: '#5BA3F5',
+  primaryDark: '#4A90E2',
+  secondary: '#9B88FF',
+  accent: '#FF85B3',
+
+  // Backgrounds
+  background: '#121212',
+  surface: '#1E1E1E',
+  card: '#2A2A2A',
+  modal: '#252525',
+
+  // Text colors
+  text: '#FFFFFF',
+  textSecondary: '#B0B0B0',
+  textLight: '#777777',
+  textInverse: '#333333',
+
+  // Status colors
+  success: '#66BB6A',
+  warning: '#FFD54F',
+  error: '#EF5350',
+  info: '#42A5F5',
+
+  // Component specific
+  border: '#333333',
+  divider: '#404040',
+  disabled: '#555555',
+  placeholder: '#666666',
+
+  // Buttons
+  buttonPrimary: '#5BA3F5',
+  buttonSecondary: '#333333',
+  buttonText: '#FFFFFF',
+
+  // Input
+  inputBackground: '#2A2A2A',
+  inputBorder: '#404040',
+  inputText: '#FFFFFF',
+
+  // Navigation
+  navBackground: '#1E1E1E',
+  navBorder: '#333333',
+  navIcon: '#999999',
+  navIconActive: '#5BA3F5',
+
+  // Overlay
+  overlay: 'rgba(0, 0, 0, 0.7)',
+  overlayLight: 'rgba(0, 0, 0, 0.5)',
+};
+
+export type Theme = typeof lightTheme;
+export type ThemeMode = 'light' | 'dark';
