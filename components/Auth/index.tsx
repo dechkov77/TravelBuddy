@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
 import { useAuthLogic } from './logic';
 import { styles } from './styles';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
-
 export default function Auth() {
   const { theme } = useTheme();
   const {
@@ -19,9 +18,7 @@ export default function Auth() {
     handleSignUp,
     handleSignIn,
   } = useAuthLogic();
-
   const [error, setError] = useState<string | null>(null);
-
   const onSignUp = async () => {
     setError(null);
     const result = await handleSignUp();
@@ -32,7 +29,6 @@ export default function Auth() {
       Alert.alert('Success', 'Your account has been created successfully.');
     }
   };
-
   const onSignIn = async () => {
     setError(null);
     const result = await handleSignIn();
@@ -41,10 +37,14 @@ export default function Auth() {
       Alert.alert('Sign In Failed', result.error || 'Please try again.');
     }
   };
-
   return (
-    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={[styles.card, { backgroundColor: theme.surface }]}>
+    <ImageBackground 
+      source={require('../../assets/images/background.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={[styles.card, { backgroundColor: theme.surface + 'E8' }]}>
         <View style={[styles.header, { backgroundColor: theme.primary }]}>
           <View style={styles.iconContainer}>
             <Ionicons name="globe" size={32} color={theme.buttonText} />
@@ -52,8 +52,7 @@ export default function Auth() {
           <Text style={[styles.title, { color: theme.buttonText }]}>Welcome to TravelBuddy</Text>
           <Text style={[styles.subtitle, { color: theme.buttonText }]}>Find your perfect travel companion</Text>
         </View>
-
-        {/* Tabs */}
+        {}
         <View style={styles.tabsContainer}>
           <TouchableOpacity
             style={[
@@ -82,8 +81,7 @@ export default function Auth() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Sign In Form */}
+        {}
         {activeTab === 'signin' && (
           <View style={styles.form}>
             <View style={styles.inputGroup}>
@@ -127,25 +125,26 @@ export default function Auth() {
             </TouchableOpacity>
           </View>
         )}
-
-        {/* Sign Up Form */}
+        {}
         {activeTab === 'signup' && (
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
+              <Text style={[styles.label, { color: theme.text }]}>Full Name</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { borderColor: theme.inputBorder, backgroundColor: theme.inputBackground, color: theme.inputText }]}
                 placeholder="John Doe"
+                placeholderTextColor={theme.placeholder}
                 value={signUpData.name}
                 onChangeText={(text) => setSignUpData({ ...signUpData, name: text })}
                 autoCapitalize="words"
               />
             </View>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={[styles.label, { color: theme.text }]}>Email</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { borderColor: theme.inputBorder, backgroundColor: theme.inputBackground, color: theme.inputText }]}
                 placeholder="your@email.com"
+                placeholderTextColor={theme.placeholder}
                 value={signUpData.email}
                 onChangeText={(text) => setSignUpData({ ...signUpData, email: text })}
                 keyboardType="email-address"
@@ -154,19 +153,20 @@ export default function Auth() {
               />
             </View>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
+              <Text style={[styles.label, { color: theme.text }]}>Password</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { borderColor: theme.inputBorder, backgroundColor: theme.inputBackground, color: theme.inputText }]}
                 placeholder="••••••••"
+                placeholderTextColor={theme.placeholder}
                 value={signUpData.password}
                 onChangeText={(text) => setSignUpData({ ...signUpData, password: text })}
                 secureTextEntry
                 autoCapitalize="none"
               />
             </View>
-            {error && <Text style={styles.errorText}>{error}</Text>}
+            {error && <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text>}
             <TouchableOpacity
-              style={[styles.button, styles.buttonSunset, loading && styles.buttonDisabled]}
+              style={[styles.button, { backgroundColor: theme.primary }, loading && styles.buttonDisabled]}
               onPress={onSignUp}
               disabled={loading}
             >
@@ -174,7 +174,7 @@ export default function Auth() {
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <>
-                  <Text style={styles.buttonText}>Create Account</Text>
+                  <Text style={[styles.buttonText, { color: theme.buttonText }]}>Create Account</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -182,5 +182,6 @@ export default function Auth() {
         )}
       </View>
     </ScrollView>
+    </ImageBackground>
   );
 }

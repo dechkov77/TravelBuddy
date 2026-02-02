@@ -4,14 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { COUNTRIES } from '../../utils/countries';
 import { styles } from './styles';
-
 interface CountryPickerProps {
   value: string;
   onChange: (country: string) => void;
   placeholder?: string;
   label?: string;
 }
-
 export default function CountryPicker({
   value,
   onChange,
@@ -21,17 +19,14 @@ export default function CountryPicker({
   const { theme } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
   const filteredCountries = COUNTRIES.filter((country) =>
     country.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   const handleSelectCountry = (country: string) => {
     onChange(country);
     setModalVisible(false);
     setSearchTerm('');
   };
-
   return (
     <View>
       {label && <Text style={[styles.label, { color: theme.text }]}>{label}</Text>}
@@ -45,7 +40,6 @@ export default function CountryPicker({
         </Text>
         <Ionicons name="chevron-down" size={20} color={theme.textSecondary} />
       </TouchableOpacity>
-
       <Modal
         visible={modalVisible}
         transparent
@@ -68,7 +62,6 @@ export default function CountryPicker({
                 <Ionicons name="close" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
-
             <View style={[styles.searchContainer, { backgroundColor: theme.inputBackground, borderBottomColor: theme.divider }]}>
               <Ionicons name="search" size={20} color={theme.textSecondary} style={styles.searchIcon} />
               <TextInput
@@ -86,7 +79,6 @@ export default function CountryPicker({
                 autoFocus
               />
             </View>
-
             <ScrollView style={[styles.countryList, { backgroundColor: theme.background }]}>
               {filteredCountries.map((country) => (
                 <TouchableOpacity

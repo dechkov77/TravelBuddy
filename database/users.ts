@@ -1,6 +1,5 @@
 import { getDatabase } from './init';
 import { User } from './types';
-
 export const createUser = async (
   id: string,
   email: string,
@@ -13,7 +12,6 @@ export const createUser = async (
     [id, email, name, passwordHash]
   );
 };
-
 export const getUserByEmail = async (email: string): Promise<User | null> => {
   const db = await getDatabase();
   const result = await db.getFirstAsync<User>(
@@ -22,7 +20,6 @@ export const getUserByEmail = async (email: string): Promise<User | null> => {
   );
   return result || null;
 };
-
 export const getUserById = async (id: string): Promise<User | null> => {
   const db = await getDatabase();
   const result = await db.getFirstAsync<User>(
@@ -31,13 +28,9 @@ export const getUserById = async (id: string): Promise<User | null> => {
   );
   return result || null;
 };
-
-// Simple password hash (in production, use bcrypt or similar)
 export const hashPassword = (password: string): string => {
-  // This is a simple hash for demo purposes - use proper crypto in production
-  return btoa(password); // Base64 encoding (not secure, just for demo)
+  return btoa(password);
 };
-
 export const verifyPassword = (password: string, hash: string): boolean => {
   return hashPassword(password) === hash;
 };

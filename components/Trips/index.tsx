@@ -16,7 +16,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import TripDetail from '../TripDetail';
 import DatePicker from '../DatePicker';
-
 export default function Trips() {
   const { theme } = useTheme();
   const {
@@ -32,7 +31,6 @@ export default function Trips() {
     handleCreateTrip,
     handleDeleteTrip,
   } = useTripsLogic();
-
   const onSubmit = async () => {
     const result = await handleCreateTrip();
     if (!result.success) {
@@ -41,7 +39,6 @@ export default function Trips() {
       Alert.alert('Success', 'Your trip has been created');
     }
   };
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -49,11 +46,9 @@ export default function Trips() {
       </View>
     );
   }
-
   if (selectedTrip) {
     return <TripDetail tripId={selectedTrip} onClose={() => setSelectedTrip(null)} />;
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface }]}>
@@ -66,7 +61,6 @@ export default function Trips() {
           <Text style={[styles.createButtonText, { color: theme.buttonText }]}>Create Trip</Text>
         </TouchableOpacity>
       </View>
-
       {trips.length === 0 ? (
         <View style={styles.emptyCard}>
           <Ionicons name="map" size={64} color="#CCC" style={styles.emptyIcon} />
@@ -126,8 +120,7 @@ export default function Trips() {
           ))}
         </View>
       )}
-
-      {/* Create Trip Modal */}
+      {}
       <Modal visible={dialogOpen} transparent animationType="fade">
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
@@ -135,7 +128,6 @@ export default function Trips() {
             <Text style={[styles.modalDescription, { color: theme.textSecondary }]}>
               Plan your next adventure by adding trip details
             </Text>
-
             <View style={styles.form}>
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: theme.text }]}>Destination *</Text>
@@ -154,7 +146,6 @@ export default function Trips() {
                   onChangeText={(text) => setNewTrip({ ...newTrip, destination: text })}
                 />
               </View>
-
               <View style={styles.dateRow}>
                 <View style={[styles.inputGroup, styles.dateInput]}>
                   <DatePicker
@@ -175,7 +166,6 @@ export default function Trips() {
                   />
                 </View>
               </View>
-
               <View style={styles.inputGroup}>
                 <Text style={[styles.label, { color: theme.text }]}>Description</Text>
                 <TextInput
@@ -197,7 +187,6 @@ export default function Trips() {
                 />
               </View>
             </View>
-
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.cancelButton, { backgroundColor: theme.textSecondary, opacity: 0.3 }]}

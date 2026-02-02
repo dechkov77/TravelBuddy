@@ -4,24 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNetwork } from '../../contexts/NetworkContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import syncQueueService from '../../services/syncQueue';
-
 export default function OfflineIndicator() {
   const { isOnline, isConnecting } = useNetwork();
   const { theme } = useTheme();
   const queueSize = syncQueueService.getQueueSize();
-
   if (isOnline && !isConnecting) {
     return null;
   }
-
   const displayText = isConnecting
     ? queueSize > 0
       ? `Syncing ${queueSize} change${queueSize > 1 ? 's' : ''}...`
       : 'Reconnecting...'
     : `Offline - ${queueSize} change${queueSize > 1 ? 's' : ''} saved locally`;
-
   const backgroundColor = isConnecting ? theme.warning : theme.error;
-
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Ionicons
@@ -34,7 +29,6 @@ export default function OfflineIndicator() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',

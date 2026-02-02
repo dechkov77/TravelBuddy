@@ -8,7 +8,6 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
-
 export interface Trip {
   id: string;
   user_id: string;
@@ -19,7 +18,6 @@ export interface Trip {
   created_at: string;
   updated_at: string;
 }
-
 export interface Buddy {
   id: string;
   sender_id: string;
@@ -28,14 +26,12 @@ export interface Buddy {
   created_at: string;
   updated_at: string;
 }
-
 export interface TripParticipant {
   id: string;
   trip_id: string;
   user_id: string;
   joined_at: string;
 }
-
 export interface Message {
   id: string;
   trip_id: string;
@@ -43,7 +39,6 @@ export interface Message {
   content: string;
   created_at: string;
 }
-
 export interface User {
   id: string;
   email: string;
@@ -51,7 +46,6 @@ export interface User {
   password_hash: string;
   created_at: string;
 }
-
 export interface ItineraryItem {
   id: string;
   trip_id: string;
@@ -62,7 +56,6 @@ export interface ItineraryItem {
   location: string | null;
   created_at: string;
 }
-
 export interface Expense {
   id: string;
   trip_id: string;
@@ -71,10 +64,9 @@ export interface Expense {
   amount: number;
   category: string | null;
   description: string | null;
-  split_among: string[] | string | null; // JSON array of user IDs
+  split_among: string[] | string | null;
   created_at: string;
 }
-
 export interface Recommendation {
   id: string;
   trip_id: string;
@@ -86,7 +78,6 @@ export interface Recommendation {
   rating: number | null;
   created_at: string;
 }
-
 export interface JournalEntry {
   id: string;
   trip_id: string;
@@ -98,7 +89,6 @@ export interface JournalEntry {
   location: string | null;
   created_at: string;
 }
-
 export interface ChatMessage {
   id: string;
   sender_id: string;

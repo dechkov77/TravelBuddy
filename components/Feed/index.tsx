@@ -13,11 +13,9 @@ import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import TripDetail from '../TripDetail';
-
 interface FeedProps {
   onNavigate?: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
-
 export default function Feed({ onNavigate }: FeedProps = {}) {
   const { theme } = useTheme();
   const {
@@ -29,11 +27,9 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
     buddyIds,
   } = useFeedLogic();
   const [selectedTrip, setSelectedTrip] = useState<string | null>(null);
-
   if (selectedTrip) {
     return <TripDetail tripId={selectedTrip} onClose={() => setSelectedTrip(null)} />;
   }
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -41,15 +37,13 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface }]}>
         <Text style={[styles.title, { color: theme.text }]}>Trip Feed</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Discover trips from buddies and around the world</Text>
       </View>
-
-      {/* Search Bar */}
+      {}
       <View style={[styles.searchContainer, { backgroundColor: theme.background }]}>
         <View style={[styles.searchInput, { backgroundColor: theme.inputBackground, borderColor: theme.inputBorder }]}>
           <Ionicons name="search" size={20} color={theme.textSecondary} style={styles.searchIcon} />
@@ -66,8 +60,7 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
           )}
         </View>
       </View>
-
-      {/* Trips List */}
+      {}
       <View style={styles.tripsList}>
         {trips.length === 0 && !searching ? (
           <View style={styles.emptyContainer}>
@@ -99,7 +92,6 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
                   <Text style={styles.buddyBadgeText}>Buddy Trip</Text>
                 </View>
               )}
-
               <View style={styles.tripHeader}>
                 <View style={styles.destinationContainer}>
                   <Ionicons name="location" size={24} color="#0066CC" />
@@ -109,7 +101,6 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
                   </View>
                 </View>
               </View>
-
               <View style={styles.tripDetails}>
                 <View style={styles.dateContainer}>
                   <Ionicons name="calendar" size={16} color="#666" />
@@ -118,14 +109,12 @@ export default function Feed({ onNavigate }: FeedProps = {}) {
                     {format(new Date(trip.end_date), 'MMM d, yyyy')}
                   </Text>
                 </View>
-
                 {trip.description && (
                   <Text style={styles.tripDescription} numberOfLines={2}>
                     {trip.description}
                   </Text>
                 )}
               </View>
-
               <View style={styles.tripFooter}>
                 <TouchableOpacity style={styles.viewButton}>
                   <Text style={styles.viewButtonText}>View Trip</Text>

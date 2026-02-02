@@ -1,6 +1,5 @@
 import { getDatabase } from './init';
 import { ItineraryItem } from './types';
-
 export const createItineraryItem = async (
   id: string,
   tripId: string,
@@ -16,7 +15,6 @@ export const createItineraryItem = async (
     [id, tripId, day, title, description || null, time || null, location || null]
   );
 };
-
 export const getItineraryItemsByTripId = async (tripId: string): Promise<ItineraryItem[]> => {
   const db = await getDatabase();
   return await db.getAllAsync<ItineraryItem>(
@@ -24,7 +22,6 @@ export const getItineraryItemsByTripId = async (tripId: string): Promise<Itinera
     [tripId]
   );
 };
-
 export const updateItineraryItem = async (
   itemId: string,
   updates: Partial<{
@@ -38,7 +35,6 @@ export const updateItineraryItem = async (
   const db = await getDatabase();
   const fields: string[] = [];
   const values: any[] = [];
-
   if (updates.day !== undefined) {
     fields.push('day = ?');
     values.push(updates.day);
@@ -59,15 +55,12 @@ export const updateItineraryItem = async (
     fields.push('location = ?');
     values.push(updates.location);
   }
-
   values.push(itemId);
-
   await db.runAsync(
     `UPDATE itinerary_items SET ${fields.join(', ')} WHERE id = ?`,
     values
   );
 };
-
 export const deleteItineraryItem = async (itemId: string): Promise<void> => {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM itinerary_items WHERE id = ?', [itemId]);

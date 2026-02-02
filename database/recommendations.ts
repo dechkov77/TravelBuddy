@@ -1,6 +1,5 @@
 import { getDatabase } from './init';
 import { Recommendation } from './types';
-
 export const createRecommendation = async (
   id: string,
   tripId: string,
@@ -26,7 +25,6 @@ export const createRecommendation = async (
     ]
   );
 };
-
 export const getRecommendationsByTripId = async (tripId: string): Promise<Recommendation[]> => {
   const db = await getDatabase();
   return await db.getAllAsync<Recommendation>(
@@ -34,7 +32,6 @@ export const getRecommendationsByTripId = async (tripId: string): Promise<Recomm
     [tripId]
   );
 };
-
 export const updateRecommendation = async (
   recommendationId: string,
   updates: Partial<{
@@ -48,7 +45,6 @@ export const updateRecommendation = async (
   const db = await getDatabase();
   const fields: string[] = [];
   const values: any[] = [];
-
   if (updates.title !== undefined) {
     fields.push('title = ?');
     values.push(updates.title);
@@ -69,15 +65,12 @@ export const updateRecommendation = async (
     fields.push('rating = ?');
     values.push(updates.rating);
   }
-
   values.push(recommendationId);
-
   await db.runAsync(
     `UPDATE recommendations SET ${fields.join(', ')} WHERE id = ?`,
     values
   );
 };
-
 export const deleteRecommendation = async (recommendationId: string): Promise<void> => {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM recommendations WHERE id = ?', [recommendationId]);

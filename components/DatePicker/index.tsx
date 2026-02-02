@@ -4,26 +4,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { useTheme } from '../../contexts/ThemeContext';
 import { styles } from './styles';
-
-// Conditionally import DateTimePicker based on platform
 let DateTimePicker: any = null;
 if (Platform.OS !== 'web') {
   try {
     DateTimePicker = require('@react-native-community/datetimepicker').default;
   } catch (e) {
-    console.warn('DateTimePicker not available');
   }
 }
-
 interface DatePickerProps {
-  value: string; // YYYY-MM-DD format
+  value: string;
   onChange: (date: string) => void;
   placeholder?: string;
   label?: string;
   minimumDate?: Date;
   maximumDate?: Date;
 }
-
 export default function DatePicker({
   value,
   onChange,
@@ -37,12 +32,10 @@ export default function DatePicker({
   const [tempDate, setTempDate] = useState<Date>(
     value ? new Date(value) : new Date()
   );
-
   const handleDateChange = (event: any, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShowPicker(false);
     }
-    
     if (selectedDate) {
       setTempDate(selectedDate);
       if (Platform.OS === 'android') {
@@ -51,16 +44,12 @@ export default function DatePicker({
       }
     }
   };
-
   const handleConfirm = () => {
     const formattedDate = format(tempDate, 'yyyy-MM-dd');
     onChange(formattedDate);
     setShowPicker(false);
   };
-
   const displayValue = value ? format(new Date(value), 'MMM d, yyyy') : placeholder;
-
-  // Web fallback - show modal with date input
   if (Platform.OS === 'web') {
     return (
       <View>
@@ -127,9 +116,7 @@ export default function DatePicker({
       </View>
     );
   }
-
   if (!DateTimePicker) {
-    // Fallback if DateTimePicker is not available
     return (
       <View>
         {label && <Text style={[styles.label, { color: theme.text }]}>{label}</Text>}
@@ -150,7 +137,6 @@ export default function DatePicker({
       </View>
     );
   }
-
   return (
     <View>
       {label && <Text style={[styles.label, { color: theme.text }]}>{label}</Text>}
@@ -163,7 +149,6 @@ export default function DatePicker({
           {displayValue}
         </Text>
       </TouchableOpacity>
-
       {Platform.OS === 'ios' ? (
         <Modal
           visible={showPicker}

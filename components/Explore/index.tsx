@@ -13,11 +13,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import PublicProfile from '../PublicProfile';
-
 interface ExploreProps {
   onNavigate?: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
-
 export default function Explore({ onNavigate }: ExploreProps = {}) {
   const { theme } = useTheme();
   const { 
@@ -32,45 +30,39 @@ export default function Explore({ onNavigate }: ExploreProps = {}) {
     buddyStatuses,
   } = useExploreLogic();
   const [viewingProfile, setViewingProfile] = useState<string | null>(null);
-
+  const handleCloseProfile = async () => {
+    setViewingProfile(null);
+    if (profiles.length > 0) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  };
   const handleSendRequest = async (receiverId: string) => {
-    console.log('[Explore] handleSendRequest called with receiverId:', receiverId);
     try {
       const result = await sendBuddyRequest(receiverId);
-      console.log('[Explore] sendBuddyRequest result:', result);
       if (result.success) {
         Alert.alert('Success', 'Your buddy request has been sent');
       } else {
-        console.error('[Explore] sendBuddyRequest failed:', result.error);
         Alert.alert('Error', result.error || 'Failed to send buddy request');
       }
     } catch (error) {
-      console.error('[Explore] Error in handleSendRequest:', error);
       Alert.alert('Error', 'An unexpected error occurred while sending the request');
     }
   };
-
   const handleRemoveBuddy = async (buddyId: string) => {
-    console.log('[Explore] handleRemoveBuddy called with buddyId:', buddyId);
     try {
       const result = await removeBuddy(buddyId);
-      console.log('[Explore] removeBuddy result:', result);
       if (result.success) {
         Alert.alert('Success', 'Buddy removed successfully');
       } else {
-        console.error('[Explore] removeBuddy failed:', result.error);
         Alert.alert('Error', result.error || 'Failed to remove buddy');
       }
     } catch (error) {
-      console.error('[Explore] Error in handleRemoveBuddy:', error);
       Alert.alert('Error', 'An unexpected error occurred while removing the buddy');
     }
   };
-
   if (viewingProfile) {
-    return <PublicProfile userId={viewingProfile} onClose={() => setViewingProfile(null)} onNavigate={onNavigate} />;
+    return <PublicProfile userId={viewingProfile} onClose={handleCloseProfile} onNavigate={onNavigate} />;
   }
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -78,15 +70,13 @@ export default function Explore({ onNavigate }: ExploreProps = {}) {
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface }]}>
         <Text style={[styles.title, { color: theme.text }]}>Explore Travelers</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Find your perfect travel companion</Text>
       </View>
-
-      {/* Search Bar */}
+      {}
       <View style={[styles.searchContainer, { backgroundColor: theme.background }]}>
         <View style={[styles.searchInput, { backgroundColor: theme.inputBackground, borderColor: theme.inputBorder }]}>
           <Ionicons name="search" size={20} color={theme.textSecondary} style={styles.searchIcon} />
@@ -103,8 +93,7 @@ export default function Explore({ onNavigate }: ExploreProps = {}) {
           )}
         </View>
       </View>
-
-      {/* Profiles Grid */}
+      {}
       <View style={styles.profilesGrid}>
         {profiles.length === 0 && !searching ? (
           <Text style={[styles.emptyText, { color: theme.textSecondary }]}>

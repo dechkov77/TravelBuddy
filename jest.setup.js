@@ -1,8 +1,12 @@
-import '@testing-library/jest-native/extend-expect';
-
 // Mock React Native modules
 jest.mock('react-native', () => ({
-  ...jest.requireActual('react-native'),
+  View: jest.fn(),
+  Text: jest.fn(),
+  TextInput: jest.fn(),
+  ScrollView: jest.fn(),
+  FlatList: jest.fn(),
+  TouchableOpacity: jest.fn(),
+  TouchableHighlight: jest.fn(),
   Platform: {
     OS: 'ios',
     select: (obj) => obj.ios,
@@ -13,6 +17,18 @@ jest.mock('react-native', () => ({
     removeItem: jest.fn(),
     clear: jest.fn(),
   },
+  StyleSheet: {
+    create: jest.fn((styles) => styles),
+  },
+}));
+
+// Mock expo vector icons
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: jest.fn(() => null),
+  MaterialIcons: jest.fn(() => null),
+  FontAwesome: jest.fn(() => null),
+  FontAwesome5: jest.fn(() => null),
+  Entypo: jest.fn(() => null),
 }));
 
 // Mock expo-router

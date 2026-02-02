@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-
 export const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -24,13 +23,13 @@ export const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-end',
   },
   menuDrawer: {
     width: 280,
     height: '100%',
     shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
+    shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

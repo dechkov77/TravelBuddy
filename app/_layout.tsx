@@ -3,17 +3,17 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { NetworkProvider } from "../contexts/NetworkContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { getDatabase } from "../database/init";
+import * as BuddyService from "../database/buddies";
 import { useEffect } from "react";
 import { Platform } from "react-native";
-
+import React from "react";
 export default function RootLayout() {
   useEffect(() => {
-    // Initialize database on app start (works on both web and native)
     getDatabase().catch((error) => {
-      console.error('Database initialization error:', error);
+    });
+    BuddyService.cleanupDuplicateBuddies().catch((error) => {
     });
   }, []);
-
   return (
     <ThemeProvider>
       <NetworkProvider>

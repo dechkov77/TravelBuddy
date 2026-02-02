@@ -1,48 +1,42 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import * as ProfileService from '../../database/profiles';
+import * as BuddyService from '../../database/buddies';
 import * as TripService from '../../database/trips';
-
 interface UseHomeLogicProps {
   onNavigate: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile') => void;
 }
-
 export const useHomeLogic = ({ onNavigate }: UseHomeLogicProps) => {
   const { user } = useAuth();
   const [stats, setStats] = useState({ travelers: 0, trips: 0 });
-
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [travelersCount, tripsCount] = await Promise.all([
-          ProfileService.getProfileCount(),
-          TripService.getTripCount(),
-        ]);
-
+        if (!user) {
+          setStats({ travelers: 0, trips: 0 });
+          return;
+        }
+        const buddies = await BuddyService.getBuddyRequestWithProfiles(user.id, 'accepted');
+        const buddyCount = buddies.length;
+        const userTrips = await TripService.getTripsByUserId(user.id);
+        const tripCount = userTrips.length;
         setStats({
-          travelers: travelersCount,
-          trips: tripsCount,
+          travelers: buddyCount,
+          trips: tripCount,
         });
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        setStats({ travelers: 0, trips: 0 });
       }
     };
-
     fetchStats();
-  }, []);
-
+  }, [user]);
   const handleExplore = () => {
     onNavigate('explore');
   };
-
   const handleTrips = () => {
     onNavigate('trips');
   };
-
   const handleAuth = () => {
-    // This will be handled by the parent navigator
   };
-
   return {
     user,
     stats,

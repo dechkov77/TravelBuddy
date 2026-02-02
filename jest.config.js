@@ -1,5 +1,4 @@
 module.exports = {
-  preset: 'jest-expo',
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
@@ -28,10 +27,7 @@ module.exports = {
   },
   testPathIgnorePatterns: ['/node_modules/', '/.expo/'],
   transformIgnorePatterns: [
-    // Allow transforming these packages which ship modern ESM/TS source
     'node_modules/(?!(react-native|@react-native|@react-navigation|expo|@expo|expo-modules-core|expo-modules-autolinking|@unimodules|unimodules-permissions-interface|react-native-gesture-handler|react-native-reanimated)/)',
   ],
-  transform: {
-    '^.+\\.[jt]sx?$': 'babel-jest',
-  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

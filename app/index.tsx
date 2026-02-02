@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { useNetwork } from '../contexts/NetworkContext';
@@ -15,7 +15,6 @@ import Chat from '../components/Chat';
 import Navbar from '../components/Navbar';
 import OfflineIndicator from '../components/OfflineIndicator';
 import syncService from '../services/syncService';
-
 export default function AppNavigator() {
   const { user, loading } = useAuth();
   const { isOnline } = useNetwork();
@@ -23,9 +22,8 @@ export default function AppNavigator() {
   const router = useRouter();
   const segments = useSegments();
   const [currentScreen, setCurrentScreen] = useState<'home' | 'auth' | 'explore' | 'feed' | 'trips' | 'buddies' | 'profile' | 'chat'>('home');
-
+  const slideAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    // Handle navigation based on auth state
     if (!loading) {
       if (!user) {
         setCurrentScreen('auth');
@@ -39,46 +37,44 @@ export default function AppNavigator() {
       }
     }
   }, [user, loading, segments]);
-
-  // Sync pending operations when coming back online
   useEffect(() => {
     if (isOnline && !syncService.isSyncInProgress()) {
       const syncPending = async () => {
         try {
           const queueSize = syncService.getQueueSize();
           if (queueSize > 0) {
-            console.log(`Syncing ${queueSize} pending operations...`);
             await syncService.syncAllPendingOperations();
           }
         } catch (error) {
-          console.error('Error syncing pending operations:', error);
         }
       };
-
       syncPending();
     }
   }, [isOnline]);
-
   const handleNavigate = (screen: 'home' | 'explore' | 'feed' | 'trips' | 'buddies' | 'profile' | 'chat') => {
-    setCurrentScreen(screen);
+    Animated.timing(slideAnim, {
+      toValue: 1000,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      setCurrentScreen(screen);
+      slideAnim.setValue(-1000);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    });
   };
-
-  // Show loading state
   if (loading) {
-    return null; // Or a loading component
+    return null;
   }
-
-  // Show auth screen if not logged in
   if (!user && currentScreen !== 'auth') {
     return <Auth />;
   }
-
-  // Show auth screen when explicitly navigating to auth
   if (currentScreen === 'auth') {
     return <Auth />;
   }
-
-  // Render the appropriate screen
   const renderScreen = () => {
     switch (currentScreen) {
       case 'home':
@@ -99,18 +95,23 @@ export default function AppNavigator() {
         return <Home onNavigate={handleNavigate} />;
     }
   };
-
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <OfflineIndicator />
       {user && <Navbar currentScreen={currentScreen} onNavigate={handleNavigate} />}
-      <View style={styles.content}>
+      <Animated.View 
+        style={[
+          styles.content,
+          {
+            transform: [{ translateX: slideAnim }],
+          }
+        ]}
+      >
         {renderScreen()}
-      </View>
+      </Animated.View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import PublicProfile from '../PublicProfile';
-
 interface BuddiesProps {
   onNavigate?: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
@@ -31,9 +30,9 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
     accepted,
     processing,
     handleRequest,
+    handleRemoveBuddy,
   } = useBuddiesLogic();
   const [viewingProfile, setViewingProfile] = useState<string | null>(null);
-
   const onHandleRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
     const result = await handleRequest(requestId, status);
     if (result.success) {
@@ -42,11 +41,17 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
       Alert.alert('Error', result.error || 'Failed to update request');
     }
   };
-
+  const onRemoveBuddy = async (buddyId: string) => {
+    const result = await handleRemoveBuddy(buddyId);
+    if (result.success) {
+      Alert.alert('Success', 'Buddy removed successfully');
+    } else {
+      Alert.alert('Error', result.error || 'Failed to remove buddy');
+    }
+  };
   if (viewingProfile) {
     return <PublicProfile userId={viewingProfile} onClose={() => setViewingProfile(null)} onNavigate={onNavigate} />;
   }
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -54,15 +59,13 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface }]}>
         <Text style={[styles.title, { color: theme.text }]}>Buddy Requests</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Manage your travel connections</Text>
       </View>
-
-      {/* Tabs */}
+      {}
       <View style={[styles.tabsContainer, { backgroundColor: theme.surface, borderBottomColor: theme.divider }]}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'received' && [styles.tabActive, { borderBottomColor: theme.primary }]]}
@@ -89,8 +92,7 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
           </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Received Requests */}
+      {}
       {activeTab === 'received' && (
         <View style={styles.requestsGrid}>
           {received.map((request) => (
@@ -145,8 +147,7 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
           {received.length === 0 && <Text style={styles.emptyText}>No pending requests</Text>}
         </View>
       )}
-
-      {/* Sent Requests */}
+      {}
       {activeTab === 'sent' && (
         <View style={styles.requestsGrid}>
           {sent.map((request) => (
@@ -180,8 +181,7 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
           {sent.length === 0 && <Text style={styles.emptyText}>No sent requests</Text>}
         </View>
       )}
-
-      {/* Accepted Buddies */}
+      {}
       {activeTab === 'buddies' && (
         <View style={styles.requestsGrid}>
           {accepted.map((request) => {
@@ -213,6 +213,22 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
                     ))}
                   </View>
                 )}
+                <View style={styles.buttonsRow}>
+                  <TouchableOpacity
+                    style={[styles.rejectButton, { flex: 1 }]}
+                    onPress={() => onRemoveBuddy(buddyId)}
+                    disabled={processing === buddyId}
+                  >
+                    {processing === buddyId ? (
+                      <ActivityIndicator color="#333" />
+                    ) : (
+                      <>
+                        <Ionicons name="person-remove" size={20} color="#333" />
+                        <Text style={styles.rejectButtonText}>Remove Buddy</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           })}
@@ -221,7 +237,7 @@ export default function Buddies({ onNavigate }: BuddiesProps = {}) {
               <Text style={styles.emptyText}>No travel buddies yet</Text>
               <TouchableOpacity
                 style={styles.acceptButton}
-                onPress={() => router.push('/explore')}
+                onPress={() => onNavigate && onNavigate('explore')}
               >
                 <Text style={styles.acceptButtonText}>Find Buddies</Text>
               </TouchableOpacity>

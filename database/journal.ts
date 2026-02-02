@@ -1,6 +1,5 @@
 import { getDatabase } from './init';
 import { JournalEntry } from './types';
-
 export const createJournalEntry = async (
   id: string,
   tripId: string,
@@ -26,7 +25,6 @@ export const createJournalEntry = async (
     ]
   );
 };
-
 export const getJournalEntriesByTripId = async (tripId: string): Promise<JournalEntry[]> => {
   const db = await getDatabase();
   const results = await db.getAllAsync<JournalEntry>(
@@ -44,7 +42,6 @@ export const getJournalEntriesByTripId = async (tripId: string): Promise<Journal
     return entry;
   });
 };
-
 export const updateJournalEntry = async (
   entryId: string,
   updates: Partial<{
@@ -58,7 +55,6 @@ export const updateJournalEntry = async (
   const db = await getDatabase();
   const fields: string[] = [];
   const values: any[] = [];
-
   if (updates.title !== undefined) {
     fields.push('title = ?');
     values.push(updates.title);
@@ -79,12 +75,9 @@ export const updateJournalEntry = async (
     fields.push('location = ?');
     values.push(updates.location);
   }
-
   values.push(entryId);
-
   await db.runAsync(`UPDATE journal_entries SET ${fields.join(', ')} WHERE id = ?`, values);
 };
-
 export const deleteJournalEntry = async (entryId: string): Promise<void> => {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM journal_entries WHERE id = ?', [entryId]);

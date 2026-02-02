@@ -19,13 +19,11 @@ import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import TripDetail from '../TripDetail';
-
 interface PublicProfileProps {
   userId: string;
   onClose: () => void;
   onNavigate?: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
-
 export default function PublicProfile({ userId, onClose, onNavigate }: PublicProfileProps) {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -35,11 +33,10 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
   const [loading, setLoading] = useState(true);
   const [selectedTrip, setSelectedTrip] = useState<string | null>(null);
   const [isBuddy, setIsBuddy] = useState(false);
-
+  const [isRemoving, setIsRemoving] = useState(false);
   useEffect(() => {
     fetchProfile();
   }, [userId]);
-
   const fetchProfile = async () => {
     if (!user) return;
     try {
@@ -50,38 +47,53 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
       ]);
       setProfile(profileData);
       setTrips(tripsData || []);
-      
-      // Check if users are buddies
       const existing = await BuddyService.checkBuddyRequestExists(user.id, userId);
       setIsBuddy(existing?.status === 'accepted' || false);
     } catch (error) {
-      console.error('[PublicProfile] Error fetching profile:', error);
     } finally {
       setLoading(false);
     }
   };
-
   const handleSendMessage = async () => {
-    console.log('[PublicProfile] Send message clicked for user:', userId);
-    // Store the user ID to open conversation with using AsyncStorage
     try {
       const AsyncStorage = require('@react-native-async-storage/async-storage').default;
       await AsyncStorage.setItem('openChatWithUserId', userId);
-      console.log('[PublicProfile] Stored userId for chat:', userId);
     } catch (error) {
-      console.error('[PublicProfile] Error storing chat userId:', error);
     }
-    // Navigate to chat using the navigation callback
     onClose();
     if (onNavigate) {
       onNavigate('chat');
     }
   };
-
+  const handleRemoveBuddy = async () => {
+    if (!user) return;
+    Alert.alert(
+      'Remove Buddy',
+      'Are you sure you want to remove this buddy?',
+      [
+        { text: 'Cancel', onPress: () => {} },
+        {
+          text: 'Remove',
+          onPress: async () => {
+            try {
+              setIsRemoving(true);
+              await BuddyService.removeBuddy(user.id, userId);
+              Alert.alert('Success', 'Buddy removed successfully');
+              setIsBuddy(false);
+              onClose();
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to remove buddy');
+            } finally {
+              setIsRemoving(false);
+            }
+          },
+        },
+      ]
+    );
+  };
   if (selectedTrip) {
     return <TripDetail tripId={selectedTrip} onClose={() => setSelectedTrip(null)} />;
   }
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -89,7 +101,6 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
       </View>
     );
   }
-
   if (!profile) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -100,7 +111,6 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.divider }]}>
@@ -110,9 +120,8 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
         <Text style={[styles.headerTitle, { color: theme.text }]}>Profile</Text>
         <View style={{ width: 24 }} />
       </View>
-
       <View style={[styles.card, { backgroundColor: theme.surface }]}>
-        {/* Profile Picture */}
+        {}
         <View style={styles.profilePictureContainer}>
           {profile.profile_picture ? (
             <Image
@@ -125,37 +134,48 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
             </View>
           )}
         </View>
-
-        {/* Name */}
+        {}
         <Text style={[styles.name, { color: theme.text }]}>{profile.name}</Text>
-
-        {/* Country */}
+        {}
         {profile.country && (
           <View style={styles.locationRow}>
             <Ionicons name="location" size={18} color={theme.primary} />
             <Text style={[styles.locationText, { color: theme.textSecondary }]}>{profile.country}</Text>
           </View>
         )}
-
-        {/* Bio */}
+        {}
         {profile.bio && (
           <View style={styles.bioContainer}>
             <Text style={[styles.bio, { color: theme.textSecondary }]}>{profile.bio}</Text>
           </View>
         )}
-
-        {/* Send Message Button (only if buddies) */}
+        {}
         {isBuddy && user && user.id !== userId && (
-          <TouchableOpacity
-            style={[styles.messageButton, { backgroundColor: theme.primary }]}
-            onPress={handleSendMessage}
-          >
-            <Ionicons name="chatbubble" size={20} color={theme.buttonText} />
-            <Text style={[styles.messageButtonText, { color: theme.buttonText }]}>Send a Message</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={[styles.messageButton, { backgroundColor: theme.primary, flex: 1, marginRight: 8 }]}
+              onPress={handleSendMessage}
+            >
+              <Ionicons name="chatbubble" size={20} color={theme.buttonText} />
+              <Text style={[styles.messageButtonText, { color: theme.buttonText }]}>Message</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.messageButton, { backgroundColor: '#FF3333', flex: 1 }]}
+              onPress={handleRemoveBuddy}
+              disabled={isRemoving}
+            >
+              {isRemoving ? (
+                <ActivityIndicator color={theme.buttonText} />
+              ) : (
+                <>
+                  <Ionicons name="person-remove" size={20} color={theme.buttonText} />
+                  <Text style={[styles.messageButtonText, { color: theme.buttonText }]}>Remove</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
-
-        {/* Travel Interests */}
+        {}
         {Array.isArray(profile.travel_interests) && profile.travel_interests.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Travel Interests</Text>
@@ -168,8 +188,7 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
             </View>
           </View>
         )}
-
-        {/* Trips */}
+        {}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>Planned Trips ({trips.length})</Text>
           {trips.length === 0 ? (
@@ -181,7 +200,6 @@ export default function PublicProfile({ userId, onClose, onNavigate }: PublicPro
                   key={trip.id}
                   style={[styles.tripCard, { backgroundColor: theme.background, borderColor: theme.divider }]}
                   onPress={() => {
-                    console.log('[PublicProfile] Trip clicked:', trip.id);
                     setSelectedTrip(trip.id);
                   }}
                 >

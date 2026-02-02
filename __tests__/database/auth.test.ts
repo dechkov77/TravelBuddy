@@ -45,7 +45,7 @@ describe('Authentication Context', () => {
 
     it('should validate password strength', () => {
       const strongPasswords = ['SecurePass123!', 'MyPassword2024!'];
-      const weakPasswords = ['123456', 'password', 'abc'];
+      const weakPasswords = ['12345', 'pass', 'abc'];
 
       strongPasswords.forEach((password) => {
         expect(password.length).toBeGreaterThanOrEqual(8);

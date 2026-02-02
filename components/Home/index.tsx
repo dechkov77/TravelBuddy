@@ -4,20 +4,17 @@ import { useHomeLogic } from './logic';
 import { useTheme } from '../../contexts/ThemeContext';
 import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
-
 interface HomeProps {
   onNavigate: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile') => void;
 }
-
 export default function Home({ onNavigate }: HomeProps) {
   const { theme } = useTheme();
   const { user, stats, handleExplore, handleTrips, handleAuth } = useHomeLogic({ onNavigate });
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Hero Section */}
+      {}
       <ImageBackground
-        source={{ uri: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800' }}
+        source={{ uri: 'https:
         style={styles.heroSection}
         imageStyle={{ opacity: 0.7 }}
       >
@@ -45,8 +42,7 @@ export default function Home({ onNavigate }: HomeProps) {
           )}
         </View>
       </ImageBackground>
-
-      {/* Features Section */}
+      {}
       <View style={[styles.featuresSection, { backgroundColor: theme.surface }]}>
         <Text style={[styles.featuresTitle, { color: theme.text }]}>How TravelBuddy Works</Text>
         <Text style={[styles.featuresSubtitle, { color: theme.textSecondary }]}>
@@ -63,7 +59,6 @@ export default function Home({ onNavigate }: HomeProps) {
               share your passion for adventure.
             </Text>
           </View>
-
           <View style={[styles.featureCard, { backgroundColor: theme.card }]}>
             <View style={[styles.featureIcon, { backgroundColor: theme.error }]}>
               <Ionicons name="map" size={24} color={theme.buttonText} />
@@ -74,7 +69,6 @@ export default function Home({ onNavigate }: HomeProps) {
               decisions together.
             </Text>
           </View>
-
           <View style={[styles.featureCard, { backgroundColor: theme.card }]}>
             <View style={[styles.featureIcon, { backgroundColor: theme.secondary }]}>
               <Ionicons name="chatbubbles" size={24} color={theme.buttonText} />
@@ -87,24 +81,22 @@ export default function Home({ onNavigate }: HomeProps) {
           </View>
         </View>
       </View>
-
-      {/* Stats Section */}
+      {}
       <View style={styles.statsSection}>
         <View style={styles.statsGrid}>
           <View style={[styles.statCard, styles.statCardOcean]}>
             <Ionicons name="sparkles" size={48} color="#FFFFFF" style={styles.statIcon} />
-            <Text style={styles.statValue}>{stats.travelers}+</Text>
+            <Text style={styles.statValue}>{stats.travelers}</Text>
             <Text style={styles.statLabel}>Travel Buddies</Text>
           </View>
           <View style={[styles.statCard, styles.statCardSunset]}>
             <Ionicons name="map" size={48} color="#FFFFFF" style={styles.statIcon} />
-            <Text style={styles.statValue}>{stats.trips}+</Text>
+            <Text style={styles.statValue}>{stats.trips}</Text>
             <Text style={styles.statLabel}>Adventures Planned</Text>
           </View>
         </View>
       </View>
-
-      {/* CTA Section */}
+      {}
       {!user && (
         <View style={styles.ctaSection}>
           <Text style={styles.ctaTitle}>Ready to Start Your Adventure?</Text>

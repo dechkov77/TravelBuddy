@@ -15,7 +15,6 @@ import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import CountryPicker from '../CountryPicker';
-
 export default function Profile() {
   const { theme, toggleTheme, themeMode } = useTheme();
   const {
@@ -31,23 +30,14 @@ export default function Profile() {
     pickProfilePicture,
     uploadingPicture,
   } = useProfileLogic();
-
   const onSubmit = async () => {
-    console.log('[Profile] onSubmit called, current profileData:', {
-      name: profileData.name,
-      bio: profileData.bio ? 'has bio' : 'no bio',
-      country: profileData.country,
-      interestsCount: profileData.travel_interests.length,
-    });
     const result = await handleSave();
-    console.log('[Profile] handleSave result:', result);
     if (result.success) {
       Alert.alert('Success', 'Profile updated successfully');
     } else {
       Alert.alert('Error', result.error || 'Failed to update profile');
     }
   };
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -55,7 +45,6 @@ export default function Profile() {
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.card, { backgroundColor: theme.surface }]}>
@@ -72,9 +61,8 @@ export default function Profile() {
             />
           </TouchableOpacity>
         </View>
-
         <View style={styles.form}>
-          {/* Profile Picture */}
+          {}
           <View style={styles.inputGroup}>
             <Text style={[styles.label, { color: theme.text }]}>Profile Picture</Text>
             <View style={styles.profilePictureContainer}>
@@ -112,33 +100,28 @@ export default function Profile() {
               style={[styles.input, { borderColor: theme.inputBorder, backgroundColor: theme.inputBackground, color: theme.inputText }]}
               value={profileData.name}
               onChangeText={(text) => {
-                console.log('[Profile] Name changed to:', text);
                 setProfileData({ ...profileData, name: text });
               }}
               placeholder="Your name"
               placeholderTextColor={theme.placeholder}
             />
           </View>
-
           <View style={styles.inputGroup}>
             <CountryPicker
               label="Country"
               value={profileData.country}
               onChange={(country) => {
-                console.log('[Profile] Country changed to:', country);
                 setProfileData({ ...profileData, country });
               }}
               placeholder="Select your country"
             />
           </View>
-
           <View style={styles.inputGroup}>
             <Text style={[styles.label, { color: theme.text }]}>Bio</Text>
             <TextInput
               style={[styles.input, styles.textArea, { borderColor: theme.inputBorder, backgroundColor: theme.inputBackground, color: theme.inputText }]}
               value={profileData.bio}
               onChangeText={(text) => {
-                console.log('[Profile] Bio changed, length:', text.length);
                 setProfileData({ ...profileData, bio: text });
               }}
               placeholder="Tell other travelers about yourself..."
@@ -147,7 +130,6 @@ export default function Profile() {
               numberOfLines={4}
             />
           </View>
-
           <View style={styles.inputGroup}>
             <Text style={[styles.label, { color: theme.text }]}>Travel Interests</Text>
             <View style={styles.interestsInputRow}>
@@ -167,7 +149,6 @@ export default function Profile() {
                 <Ionicons name="add" size={24} color={theme.buttonText} />
               </TouchableOpacity>
             </View>
-
             <View style={styles.interestsContainer}>
               {profileData.travel_interests.map((interest, idx) => (
                 <View key={idx} style={[styles.interestBadge, { backgroundColor: theme.inputBackground }]}>
@@ -182,7 +163,6 @@ export default function Profile() {
               ))}
             </View>
           </View>
-
           <TouchableOpacity
             style={[styles.saveButton, { backgroundColor: theme.primary }, saving && { opacity: 0.6 }]}
             onPress={onSubmit}

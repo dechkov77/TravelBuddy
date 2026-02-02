@@ -1,6 +1,5 @@
 import { getDatabase } from './init';
 import { Expense } from './types';
-
 export const createExpense = async (
   id: string,
   tripId: string,
@@ -26,7 +25,6 @@ export const createExpense = async (
     ]
   );
 };
-
 export const getExpensesByTripId = async (tripId: string): Promise<Expense[]> => {
   const db = await getDatabase();
   const results = await db.getAllAsync<Expense>(
@@ -44,7 +42,6 @@ export const getExpensesByTripId = async (tripId: string): Promise<Expense[]> =>
     return expense;
   });
 };
-
 export const updateExpense = async (
   expenseId: string,
   updates: Partial<{
@@ -58,7 +55,6 @@ export const updateExpense = async (
   const db = await getDatabase();
   const fields: string[] = [];
   const values: any[] = [];
-
   if (updates.title !== undefined) {
     fields.push('title = ?');
     values.push(updates.title);
@@ -79,12 +75,9 @@ export const updateExpense = async (
     fields.push('split_among = ?');
     values.push(JSON.stringify(updates.split_among));
   }
-
   values.push(expenseId);
-
   await db.runAsync(`UPDATE expenses SET ${fields.join(', ')} WHERE id = ?`, values);
 };
-
 export const deleteExpense = async (expenseId: string): Promise<void> => {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM expenses WHERE id = ?', [expenseId]);

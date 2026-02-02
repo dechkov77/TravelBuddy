@@ -20,12 +20,10 @@ import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import PublicProfile from '../PublicProfile';
-
 interface ChatProps {
   initialUserId?: string;
   onNavigate?: (screen: 'home' | 'explore' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
-
 export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -44,20 +42,16 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
   const [viewingProfile, setViewingProfile] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
     if (!user) {
       router.replace('/auth');
       return;
     }
     fetchConversations();
-    
-    // Check if we should open a specific conversation (from PublicProfile)
     const checkForStoredUserId = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem('openChatWithUserId');
         if (storedUserId && !selectedConversation) {
-          console.log('[Chat] Opening conversation with user from AsyncStorage:', storedUserId);
           setSelectedConversation(storedUserId);
           await fetchMessages(storedUserId);
           await AsyncStorage.removeItem('openChatWithUserId');
@@ -66,27 +60,21 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
           await fetchMessages(initialUserId);
         }
       } catch (error) {
-        console.error('[Chat] Error checking stored userId:', error);
       }
     };
-    
     checkForStoredUserId();
-    
-    // Poll for new messages every 2 seconds
     pollIntervalRef.current = setInterval(() => {
       if (selectedConversation) {
         fetchMessages(selectedConversation);
       }
       fetchConversations();
     }, 2000);
-
     return () => {
       if (pollIntervalRef.current) {
         clearInterval(pollIntervalRef.current);
       }
     };
   }, [user, selectedConversation, initialUserId]);
-
   const fetchConversations = async () => {
     if (!user) return;
     try {
@@ -102,33 +90,26 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
       );
       setConversations(withProfiles);
     } catch (error) {
-      console.error('[Chat] Error fetching conversations:', error);
     } finally {
       setLoading(false);
     }
   };
-
   const fetchMessages = async (otherUserId: string) => {
     if (!user) return;
     try {
       const msgs = await ChatService.getChatMessages(user.id, otherUserId);
       setMessages(msgs);
-      // Mark messages as read
       await ChatService.markMessagesAsRead(otherUserId, user.id);
-      // Scroll to bottom
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (error) {
-      console.error('[Chat] Error fetching messages:', error);
     }
   };
-
   const handleSelectConversation = async (otherUserId: string) => {
     setSelectedConversation(otherUserId);
     await fetchMessages(otherUserId);
   };
-
   const sendMessage = async () => {
     if (!user || !selectedConversation || !messageText.trim()) return;
     setSending(true);
@@ -144,16 +125,13 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
       await fetchMessages(selectedConversation);
       await fetchConversations();
     } catch (error) {
-      console.error('[Chat] Error sending message:', error);
     } finally {
       setSending(false);
     }
   };
-
   if (viewingProfile) {
     return <PublicProfile userId={viewingProfile} onClose={() => setViewingProfile(null)} onNavigate={onNavigate} />;
   }
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -161,7 +139,6 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
       </View>
     );
   }
-
   if (selectedConversation) {
     const otherUser = conversations.find(c => c.otherUserId === selectedConversation)?.otherUser;
     return (
@@ -188,7 +165,6 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
           </TouchableOpacity>
           <View style={{ width: 24 }} />
         </View>
-
         <ScrollView
           ref={scrollViewRef}
           style={[styles.messagesContainer, { backgroundColor: theme.background }]}
@@ -223,7 +199,6 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
             );
           })}
         </ScrollView>
-
         <View style={[styles.inputContainer, { backgroundColor: theme.surface, borderTopColor: theme.divider }]}>
           <TextInput
             style={[
@@ -256,14 +231,12 @@ export default function Chat({ initialUserId, onNavigate }: ChatProps = {}) {
       </View>
     );
   }
-
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.divider }]}>
         <Text style={[styles.title, { color: theme.text }]}>Messages</Text>
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Chat with your travel buddies</Text>
       </View>
-
       {conversations.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="chatbubbles-outline" size={64} color={theme.textSecondary} />

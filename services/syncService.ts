@@ -4,7 +4,6 @@ import * as ItineraryDB from '@/database/itinerary';
 import * as JournalDB from '@/database/journal';
 import * as RecommendationDB from '@/database/recommendations';
 import syncQueueService from './syncQueue';
-
 export interface SyncableOperation {
   id: string;
   entityType: 'trip' | 'expense' | 'itinerary' | 'journal' | 'recommendation';
@@ -12,35 +11,26 @@ export interface SyncableOperation {
   data: any;
   timestamp: number;
 }
-
 class SyncService {
   private isSyncing = false;
-
   async syncAllPendingOperations(): Promise<{ success: boolean; syncedCount: number; failedCount: number }> {
     if (this.isSyncing) {
-      console.log('Sync already in progress');
       return { success: false, syncedCount: 0, failedCount: 0 };
     }
-
     this.isSyncing = true;
     let syncedCount = 0;
     let failedCount = 0;
-
     try {
       const queue = syncQueueService.getQueue();
-
       for (const operation of queue) {
         try {
           await this.processOperation(operation);
           syncQueueService.removeFromQueue(operation.id);
           syncedCount++;
         } catch (error) {
-          console.error(`Failed to sync operation ${operation.id}:`, error);
           failedCount++;
-          // Don't remove from queue if it failed - keep it for retry
         }
       }
-
       return {
         success: failedCount === 0,
         syncedCount,
@@ -50,7 +40,6 @@ class SyncService {
       this.isSyncing = false;
     }
   }
-
   private async processOperation(operation: SyncableOperation): Promise<void> {
     switch (operation.entityType) {
       case 'trip':
@@ -72,7 +61,6 @@ class SyncService {
         throw new Error(`Unknown entity type: ${(operation as any).entityType}`);
     }
   }
-
   private async syncTrip(operation: SyncableOperation): Promise<void> {
     switch (operation.operation) {
       case 'create':
@@ -93,7 +81,6 @@ class SyncService {
         break;
     }
   }
-
   private async syncExpense(operation: SyncableOperation): Promise<void> {
     switch (operation.operation) {
       case 'create':
@@ -116,7 +103,6 @@ class SyncService {
         break;
     }
   }
-
   private async syncItinerary(operation: SyncableOperation): Promise<void> {
     switch (operation.operation) {
       case 'create':
@@ -138,7 +124,6 @@ class SyncService {
         break;
     }
   }
-
   private async syncJournal(operation: SyncableOperation): Promise<void> {
     switch (operation.operation) {
       case 'create':
@@ -161,7 +146,6 @@ class SyncService {
         break;
     }
   }
-
   private async syncRecommendation(operation: SyncableOperation): Promise<void> {
     switch (operation.operation) {
       case 'create':
@@ -182,14 +166,11 @@ class SyncService {
         break;
     }
   }
-
   getQueueSize(): number {
     return syncQueueService.getQueueSize();
   }
-
   isSyncInProgress(): boolean {
     return this.isSyncing;
   }
 }
-
 export default new SyncService();

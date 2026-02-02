@@ -1,4 +1,3 @@
-// List of all countries
 export const COUNTRIES = [
   'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina',
   'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh',
@@ -28,3 +27,9 @@ export const COUNTRIES = [
   'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay',
   'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
 ].sort();
+export const getCountries = () => {
+  return COUNTRIES.map((country) => ({
+    name: country,
+    code: country.toUpperCase().slice(0, 2),
+  }));
+};

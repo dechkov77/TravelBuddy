@@ -6,22 +6,17 @@ import { styles } from './styles';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import DatePicker from '../DatePicker';
-
-// Conditionally import ImagePicker only on native platforms
 let ImagePicker: any = null;
 if (Platform.OS !== 'web') {
   try {
     ImagePicker = require('expo-image-picker');
   } catch (e) {
-    console.warn('expo-image-picker not available');
   }
 }
-
 interface TripDetailProps {
   tripId: string;
   onClose: () => void;
 }
-
 export default function TripDetail({ tripId, onClose }: TripDetailProps) {
   const { theme } = useTheme();
   const {
@@ -61,44 +56,67 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
     handleDeleteRecommendation,
     handleDeleteJournalEntry,
   } = useTripDetailLogic({ tripId });
-
   const pickImage = async () => {
     if (Platform.OS === 'web') {
-      const url = prompt('Enter image URL:');
+      const url = prompt('Enter image URL or paste image data:');
       if (url) {
         setPhotos([...photos, url]);
       }
       return;
     }
-
     if (!ImagePicker) {
       Alert.alert('Error', 'Image picker is not available on this platform');
       return;
     }
-
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Please grant camera roll permissions');
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets) {
-        const uris = result.assets.map((asset) => asset.uri);
-        setPhotos([...photos, ...uris]);
-      }
+      Alert.alert(
+        'Add Photo',
+        'How would you like to add a photo?',
+        [
+          {
+            text: 'Take Photo',
+            onPress: async () => {
+              const { status } = await ImagePicker.requestCameraPermissionsAsync();
+              if (status !== 'granted') {
+                Alert.alert('Permission needed', 'Please grant camera permissions');
+                return;
+              }
+              const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                quality: 0.8,
+              });
+              if (!result.canceled && result.assets) {
+                const uris = result.assets.map((asset) => asset.uri);
+                setPhotos([...photos, ...uris]);
+              }
+            },
+          },
+          {
+            text: 'Choose from Library',
+            onPress: async () => {
+              const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              if (status !== 'granted') {
+                Alert.alert('Permission needed', 'Please grant camera roll permissions');
+                return;
+              }
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsMultipleSelection: true,
+                quality: 0.8,
+              });
+              if (!result.canceled && result.assets) {
+                const uris = result.assets.map((asset) => asset.uri);
+                setPhotos([...photos, ...uris]);
+              }
+            },
+          },
+          { text: 'Cancel', style: 'cancel' },
+        ]
+      );
     } catch (error) {
       Alert.alert('Error', 'Failed to pick image');
-      console.error('Image picker error:', error);
     }
   };
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
@@ -106,7 +124,6 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
       </View>
     );
   }
-
   if (!trip) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -117,7 +134,6 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
       </View>
     );
   }
-
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surface, borderBottomColor: theme.divider }]}>
@@ -135,8 +151,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           </View>
         </View>
       </View>
-
-      {/* Tabs */}
+      {}
       <View style={[styles.tabsContainer, { backgroundColor: theme.surface, borderBottomColor: theme.divider }]}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'itinerary' && [styles.tabActive, { borderBottomColor: theme.primary }]]}
@@ -163,9 +178,8 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           <Text style={[styles.tabText, activeTab === 'journal' && [styles.tabTextActive, { color: theme.primary }], activeTab !== 'journal' && { color: theme.textSecondary }]}>Journal</Text>
         </TouchableOpacity>
       </View>
-
       <ScrollView style={[styles.content, { backgroundColor: theme.background }]}>
-        {/* Itinerary Tab */}
+        {}
         {activeTab === 'itinerary' && (
           <>
             {isOwner && (
@@ -219,8 +233,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
             )}
           </>
         )}
-
-        {/* Expenses Tab */}
+        {}
         {activeTab === 'expenses' && (
           <>
             {isOwner && (
@@ -274,8 +287,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
             )}
           </>
         )}
-
-        {/* Recommendations Tab */}
+        {}
         {activeTab === 'recommendations' && (
           <>
             {isOwner && (
@@ -341,8 +353,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
             )}
           </>
         )}
-
-        {/* Journal Tab */}
+        {}
         {activeTab === 'journal' && (
           <>
             {isOwner && (
@@ -400,8 +411,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           </>
         )}
       </ScrollView>
-
-      {/* Itinerary Modal */}
+      {}
       <Modal visible={itineraryDialogOpen} transparent animationType="fade">
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
@@ -503,8 +513,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           </View>
         </View>
       </Modal>
-
-      {/* Expense Modal */}
+      {}
       <Modal visible={expenseDialogOpen} transparent animationType="fade">
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
@@ -590,8 +599,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           </View>
         </View>
       </Modal>
-
-      {/* Recommendation Modal */}
+      {}
       <Modal visible={recommendationDialogOpen} transparent animationType="fade">
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
@@ -693,8 +701,7 @@ export default function TripDetail({ tripId, onClose }: TripDetailProps) {
           </View>
         </View>
       </Modal>
-
-      {/* Journal Modal */}
+      {}
       <Modal visible={journalDialogOpen} transparent animationType="fade">
         <View style={[styles.modalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>

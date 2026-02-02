@@ -1,41 +1,62 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback, Animated } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './styles';
-
 interface NavbarProps {
   currentScreen: string;
   onNavigate: (screen: 'home' | 'explore' | 'feed' | 'trips' | 'buddies' | 'profile' | 'chat') => void;
 }
-
 export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
   const { user, signOut } = useAuth();
   const { theme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const slideAnim = useRef(new Animated.Value(280)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (menuOpen) {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: false,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 350,
+          useNativeDriver: true,
+        })
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: 280,
+          duration: 350,
+          useNativeDriver: false,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 350,
+          useNativeDriver: true,
+        })
+      ]).start();
+    }
+  }, [menuOpen]);
   if (!user) {
     return null;
   }
-
   const handleNavigate = (screen: 'home' | 'explore' | 'feed' | 'trips' | 'buddies' | 'profile' | 'chat') => {
-    console.log('[Navbar] Navigating to:', screen);
     onNavigate(screen);
     setMenuOpen(false);
   };
-
   const handleSignOut = async () => {
-    console.log('[Navbar] Sign out initiated');
     try {
       await signOut();
-      console.log('[Navbar] Sign out successful');
     } catch (error) {
-      console.error('[Navbar] Sign out error:', error);
     }
     setMenuOpen(false);
   };
-
   const menuItems = [
     { screen: 'home' as const, icon: 'home', label: 'Home' },
     { screen: 'feed' as const, icon: 'newspaper', label: 'Feed' },
@@ -45,7 +66,6 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
     { screen: 'chat' as const, icon: 'chatbubbles', label: 'Chat' },
     { screen: 'profile' as const, icon: 'person', label: 'Profile' },
   ];
-
   return (
     <>
       <View style={[styles.container, { backgroundColor: theme.navBackground, borderBottomColor: theme.navBorder }]}>
@@ -55,7 +75,6 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={() => {
-            console.log('[Navbar] Hamburger menu toggled, current state:', menuOpen);
             setMenuOpen(true);
           }}
           style={styles.hamburgerButton}
@@ -63,25 +82,30 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
           <Ionicons name="menu" size={28} color={theme.text} />
         </TouchableOpacity>
       </View>
-
       <Modal
         visible={menuOpen}
         transparent
-        animationType="slide"
+        animationType="none"
         onRequestClose={() => {
-          console.log('[Navbar] Menu close requested');
           setMenuOpen(false);
         }}
       >
         <TouchableWithoutFeedback onPress={() => setMenuOpen(false)}>
-          <View style={[styles.modalOverlay, { backgroundColor: theme.overlay }]}>
+          <Animated.View style={[styles.modalOverlay, { backgroundColor: theme.overlay, opacity: fadeAnim }]}>
             <TouchableWithoutFeedback>
-              <View style={[styles.menuDrawer, { backgroundColor: theme.surface }]}>
+              <Animated.View 
+                style={[
+                  styles.menuDrawer, 
+                  { 
+                    backgroundColor: theme.surface,
+                    transform: [{ translateX: slideAnim }]
+                  }
+                ]}
+              >
                 <View style={styles.menuHeader}>
                   <Text style={[styles.menuTitle, { color: theme.text }]}>Menu</Text>
                   <TouchableOpacity
                     onPress={() => {
-                      console.log('[Navbar] Close button pressed');
                       setMenuOpen(false);
                     }}
                     style={styles.closeButton}
@@ -89,7 +113,6 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
                     <Ionicons name="close" size={24} color={theme.text} />
                   </TouchableOpacity>
                 </View>
-
                 <View style={styles.menuItems}>
                   {menuItems.map((item) => (
                     <TouchableOpacity
@@ -120,7 +143,6 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
                     </TouchableOpacity>
                   ))}
                 </View>
-
                 <TouchableOpacity
                   onPress={handleSignOut}
                   style={[styles.signOutButton, { borderTopColor: theme.divider }]}
@@ -128,9 +150,9 @@ export default function Navbar({ currentScreen, onNavigate }: NavbarProps) {
                   <Ionicons name="log-out" size={24} color={theme.error} />
                   <Text style={[styles.signOutText, { color: theme.error }]}>Sign Out</Text>
                 </TouchableOpacity>
-              </View>
+              </Animated.View>
             </TouchableWithoutFeedback>
-          </View>
+          </Animated.View>
         </TouchableWithoutFeedback>
       </Modal>
     </>

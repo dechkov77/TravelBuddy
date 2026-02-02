@@ -1,50 +1,32 @@
-// Platform-specific database initialization
-// Uses runtime platform detection to load the correct implementation
 import { Platform } from 'react-native';
 import type { DatabaseAdapter } from './db-adapter';
-
 let db: DatabaseAdapter | null = null;
-
 export const getDatabase = async (): Promise<DatabaseAdapter> => {
   if (db) return db;
-
   if (Platform.OS === 'web') {
-    // Web: Use IndexedDB (dynamically imported to avoid bundling SQLite)
     const { createIndexedDBAdapter } = await import('./db-adapter');
     db = await createIndexedDBAdapter();
-    console.log('[DB] Web database initialized with IndexedDB');
-    // Initialize database schema for web
     await initializeDatabase(db);
     return db;
   } else {
-    // Native: Use SQLite (dynamically imported only on native platforms)
-    // Use dynamic require with string interpolation to prevent Metro static analysis
     try {
       const moduleName = 'expo' + '-' + 'sqlite';
       const SQLiteModule = require(moduleName);
       const sqliteDb = await SQLiteModule.openDatabaseAsync('travelbuddy.db');
       const { wrapSQLiteDB } = await import('./db-adapter');
       db = wrapSQLiteDB(sqliteDb);
-      
-      // Initialize database schema
       await initializeDatabase(db);
       return db;
     } catch (error) {
-      console.error('Failed to initialize SQLite:', error);
       throw error;
     }
   }
 };
-
 const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
-  // Enable foreign keys (SQLite only)
   try {
     await dbInstance.execAsync('PRAGMA foreign_keys = ON;');
   } catch (e) {
-    // Ignore if not supported
   }
-
-  // Create all tables
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
@@ -54,7 +36,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS profiles (
       id TEXT PRIMARY KEY,
@@ -68,7 +49,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS trips (
       id TEXT PRIMARY KEY,
@@ -82,7 +62,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS buddies (
       id TEXT PRIMARY KEY,
@@ -96,7 +75,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       UNIQUE(sender_id, receiver_id)
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS trip_participants (
       id TEXT PRIMARY KEY,
@@ -108,7 +86,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       UNIQUE(trip_id, user_id)
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS messages (
       id TEXT PRIMARY KEY,
@@ -120,7 +97,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS itinerary_items (
       id TEXT PRIMARY KEY,
@@ -134,7 +110,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (trip_id) REFERENCES trips(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS expenses (
       id TEXT PRIMARY KEY,
@@ -150,7 +125,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS recommendations (
       id TEXT PRIMARY KEY,
@@ -166,7 +140,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS journal_entries (
       id TEXT PRIMARY KEY,
@@ -182,7 +155,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE TABLE IF NOT EXISTS chat_messages (
       id TEXT PRIMARY KEY,
@@ -195,7 +167,6 @@ const initializeDatabase = async (dbInstance: DatabaseAdapter) => {
       FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
-
   await dbInstance.execAsync(`
     CREATE INDEX IF NOT EXISTS idx_trips_user_id ON trips(user_id);
     CREATE INDEX IF NOT EXISTS idx_buddies_sender_id ON buddies(sender_id);
