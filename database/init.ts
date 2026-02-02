@@ -10,8 +10,7 @@ export const getDatabase = async (): Promise<DatabaseAdapter> => {
     return db;
   } else {
     try {
-      const moduleName = 'expo' + '-' + 'sqlite';
-      const SQLiteModule = require(moduleName);
+      const SQLiteModule = await import('expo-sqlite');
       const sqliteDb = await SQLiteModule.openDatabaseAsync('travelbuddy.db');
       const { wrapSQLiteDB } = await import('./db-adapter');
       db = wrapSQLiteDB(sqliteDb);

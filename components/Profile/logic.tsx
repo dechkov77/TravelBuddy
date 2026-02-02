@@ -116,4 +116,42 @@ export const useProfileLogic = () => {
         return new Promise<void>((resolve) => {
           const input = document.createElement('input');
           input.type = 'file';
-          input.accept = 'image
+          input.accept = 'image/*';
+          input.onchange = async (event: any) => {
+            const file = event.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (e: any) => {
+                setProfileData({
+                  ...profileData,
+                  profile_picture: e.target.result,
+                });
+                resolve();
+              };
+              reader.readAsDataURL(file);
+            }
+            resolve();
+          };
+          input.click();
+        });
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to upload picture');
+    } finally {
+      setUploadingPicture(false);
+    }
+  };
+  return {
+    profileData,
+    setProfileData,
+    loading,
+    saving,
+    newInterest,
+    setNewInterest,
+    handleSave,
+    addInterest,
+    removeInterest,
+    pickProfilePicture,
+    uploadingPicture,
+  };
+};

@@ -14,7 +14,7 @@ export default function Home({ onNavigate }: HomeProps) {
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {}
       <ImageBackground
-        source={{ uri: 'https:
+        source={{ uri: 'https://via.placeholder.com/400x300' }}
         style={styles.heroSection}
         imageStyle={{ opacity: 0.7 }}
       >
